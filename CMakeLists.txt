@@ -33,7 +33,16 @@ if (WIN32)
   target_link_libraries (pkcs11-proxy ws2_32)
 endif (WIN32)
 
-target_link_libraries (pkcs11-proxy pthread_nonshared ssl crypto c_nonshared)
+# add imported target
+add_library(static_pthread STATIC IMPORTED)
+# point the imported target at the real file
+set_property(TARGET static_pthread PROPERTY
+            IMPORTED_LOCATION /usr/lib/libpthread.a)
+add_library(static_c STATIC IMPORTED)
+set_property(TARGET static_c PROPERTY
+            IMPORTED_LOCATION /usr/lib/libc.a)
+
+target_link_libraries (pkcs11-proxy static_pthread ssl crypto static_c)
 target_link_libraries (pkcs11-daemon dl pthread ssl crypto)
 
 install_targets (/lib pkcs11-proxy)
