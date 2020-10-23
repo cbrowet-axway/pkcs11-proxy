@@ -42,7 +42,9 @@ add_library(static_c STATIC IMPORTED)
 set_property(TARGET static_c PROPERTY
             IMPORTED_LOCATION /usr/lib/x86_64-linux-gnu/libc.a)
 
-target_link_libraries (pkcs11-proxy static_pthread ssl crypto static_c)
+# target_link_libraries (pkcs11-proxy static_pthread ssl crypto static_c)
+# target_link_libraries (pkcs11-daemon dl pthread ssl crypto)
+target_link_libraries (pkcs11-proxy pthread ssl crypto)
 target_link_libraries (pkcs11-daemon dl pthread ssl crypto)
 
 install_targets (/lib pkcs11-proxy)
