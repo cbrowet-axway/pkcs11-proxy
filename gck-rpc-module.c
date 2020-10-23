@@ -2491,3 +2491,59 @@ CK_RV C_GetFunctionList(CK_FUNCTION_LIST_PTR_PTR list)
 	*list = &functionList;
 	return CKR_OK;
 }
+
+CK_RV C_Initialize(CK_VOID_PTR init_args)
+{
+	return rpc_C_Initialize(init_args);
+}
+
+CK_RV C_Finalize(CK_VOID_PTR reserved)
+{
+	return rpc_C_Finalize(reserved);
+}
+
+CK_RV C_GetInfo(CK_INFO_PTR info)
+{
+	return rpc_C_GetInfo(info);
+}
+
+CK_RV GetSlotList(CK_BBOOL token_present, CK_SLOT_ID_PTR slot_list, CK_ULONG_PTR count)
+{
+	return rpc_C_GetSlotList(token_present, slot_list, count);
+}
+
+CK_RV C_OpenSession(CK_SLOT_ID id, CK_FLAGS flags, CK_VOID_PTR user_data, CK_NOTIFY callback, CK_SESSION_HANDLE_PTR session)
+{
+	return rpc_C_OpenSession(id, flags, user_data, callback, session);
+}
+
+CK_RV C_Login(CK_SESSION_HANDLE session, CK_USER_TYPE user_type, CK_UTF8CHAR_PTR pin, CK_ULONG pin_len)
+{
+	return rpc_C_Login(session, user_type, pin, pin_len);
+}
+
+CK_RV C_Logout(CK_SESSION_HANDLE session)
+{
+	return rpc_C_Logout(session);
+}
+
+CK_RV C_FindObjectsInit(CK_SESSION_HANDLE session, CK_ATTRIBUTE_PTR template, CK_ULONG count)
+{
+	return rpc_C_FindObjectsInit(session, template, count);
+}
+
+CK_RV C_FindObjects(CK_SESSION_HANDLE session, CK_OBJECT_HANDLE_PTR objects, CK_ULONG max_count, CK_ULONG_PTR count)
+{
+	return rpc_C_FindObjects(session, objects, max_count, count);
+}
+
+CK_RV C_GetAttributeValue(CK_SESSION_HANDLE session, CK_OBJECT_HANDLE object, CK_ATTRIBUTE_PTR template, CK_ULONG count)
+{
+	return rpc_C_GetAttributeValue(session, object, template, count);
+}
+
+CK_RV FindObjectsFinal(CK_SESSION_HANDLE session)
+{
+	return rpc_C_FindObjectsFinal(session);
+}
+
