@@ -1353,6 +1353,9 @@ static CK_RV rpc_C_Initialize(CK_VOID_PTR init_args)
 	/* Lookup the socket path, append '.pkcs11' if it is a domain socket. */
 	if (pkcs11_socket_path[0] == 0) {
 		path = getenv("PKCS11_PROXY_SOCKET");
+		if (!path || !path[0]) {
+			path = getenv("PKCS11_PROXY_PORT");
+		}
 		if (path && path[0]) {
 			if ((! strncmp("tcp://", path, 6)) ||
 			    (! strncmp("tls://", path, 6)))

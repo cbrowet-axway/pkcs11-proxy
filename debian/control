@@ -2,7 +2,7 @@ Source: pkcs11-proxy
 Priority: extra
 Maintainer: Corentin Chary <cchary@commonit.com>
 Uploaders: Leif Johansson <leifj@mnt.se>
-Build-Depends: cdbs, debhelper (>= 6), cmake, libssl-dev (>= 1.0.0), libseccomp-dev (>= 1.0.0)
+Build-Depends: cdbs, debhelper (>= 6), cmake, libssl-dev (>= 1.0.0)
 Standards-Version: 3.8.0
 Section: libs
 
