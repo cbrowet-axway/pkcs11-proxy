@@ -37,10 +37,10 @@ endif (WIN32)
 add_library(static_pthread STATIC IMPORTED)
 # point the imported target at the real file
 set_property(TARGET static_pthread PROPERTY
-            IMPORTED_LOCATION /usr/lib/libpthread.a)
+            IMPORTED_LOCATION /usr/lib/x86_64-linux-gnu/libpthread.a)
 add_library(static_c STATIC IMPORTED)
 set_property(TARGET static_c PROPERTY
-            IMPORTED_LOCATION /usr/lib/libc.a)
+            IMPORTED_LOCATION /usr/lib/x86_64-linux-gnu/libc.a)
 
 target_link_libraries (pkcs11-proxy static_pthread ssl crypto static_c)
 target_link_libraries (pkcs11-daemon dl pthread ssl crypto)
