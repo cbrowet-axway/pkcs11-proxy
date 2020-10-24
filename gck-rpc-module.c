@@ -2507,7 +2507,7 @@ CK_RV C_GetInfo(CK_INFO_PTR info)
 	return rpc_C_GetInfo(info);
 }
 
-CK_RV GetSlotList(CK_BBOOL token_present, CK_SLOT_ID_PTR slot_list, CK_ULONG_PTR count)
+CK_RV C_GetSlotList(CK_BBOOL token_present, CK_SLOT_ID_PTR slot_list, CK_ULONG_PTR count)
 {
 	return rpc_C_GetSlotList(token_present, slot_list, count);
 }
@@ -2542,7 +2542,7 @@ CK_RV C_GetAttributeValue(CK_SESSION_HANDLE session, CK_OBJECT_HANDLE object, CK
 	return rpc_C_GetAttributeValue(session, object, template, count);
 }
 
-CK_RV FindObjectsFinal(CK_SESSION_HANDLE session)
+CK_RV C_FindObjectsFinal(CK_SESSION_HANDLE session)
 {
 	return rpc_C_FindObjectsFinal(session);
 }

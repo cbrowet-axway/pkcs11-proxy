@@ -44,7 +44,8 @@ set_property(TARGET static_c PROPERTY
 
 # target_link_libraries (pkcs11-proxy static_pthread ssl crypto static_c)
 # target_link_libraries (pkcs11-daemon dl pthread ssl crypto)
-target_link_libraries (pkcs11-proxy pthread ssl crypto)
+target_link_libraries (pkcs11-proxy pthread_nonshared ssl crypto c_nonshared)
+#target_link_libraries (pkcs11-proxy pthread ssl crypto)
 target_link_libraries (pkcs11-daemon dl pthread ssl crypto)
 
 install_targets (/lib pkcs11-proxy)
