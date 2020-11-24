@@ -74,6 +74,8 @@ static char tls_psk_key_filename[MAXPATHLEN] = { 0, };
 /* The error used by us when parsing of rpc message fails */
 #define PARSE_ERROR   CKR_DEVICE_ERROR
 
+static int error_strike = 0;
+
 /* -----------------------------------------------------------------------------
  * LOGGING and DEBUGGING
  */
@@ -87,13 +89,28 @@ static char tls_psk_key_filename[MAXPATHLEN] = { 0, };
 #define return_val_if_fail(x, v) \
 	if (!(x)) { gck_rpc_warn ("'%s' not true at %s", #x, __func__); return v; }
 
+static FILE* file_log = NULL;
+
 void gck_rpc_log(const char *msg, ...)
 {
 	va_list ap;
+	time_t rawtime;
+	struct tm * timeinfo;
 
 	va_start(ap, msg);
-	vfprintf(stderr, msg, ap);
-	fprintf(stderr, "\n");
+	if (!file_log)
+		file_log = fopen("/tmp/pkcs11_proxy.log", "w");
+
+	time ( &rawtime );
+	char *t = ctime(&rawtime);
+	if (t[strlen(t)-1] == '\n') t[strlen(t)-1] = '\0';
+
+  	timeinfo = localtime ( &rawtime );
+
+	fprintf(file_log, "%s::", t );
+	vfprintf(file_log, msg, ap);
+	fprintf(file_log, "\n");
+	fflush(file_log);
 	va_end(ap);
 }
 
@@ -1284,7 +1301,7 @@ proto_read_sesssion_info(GckRpcMessage * msg, CK_SESSION_INFO_PTR info)
  * INITIALIZATION and 'GLOBAL' CALLS
  */
 
-static CK_RV rpc_C_Initialize(CK_VOID_PTR init_args)
+static CK_RV rpc_C_Initialize2(CK_VOID_PTR init_args)
 {
 	CK_C_INITIALIZE_ARGS_PTR args = NULL;
 	CK_RV ret = CKR_OK;
@@ -1424,6 +1441,24 @@ done:
 	return ret;
 }
 
+static CK_RV rpc_C_Initialize(CK_VOID_PTR init_args)
+{
+	CK_RV ret;
+	do {
+		debug(("rpc_C_Initialize 1"));
+		ret = rpc_C_Initialize2(init_args);
+		if (ret != CKR_OK) {
+			error_strike++;
+			usleep(500000);
+		}
+		else
+			error_strike = 0;
+	} 
+	while (error_strike > 0);
+
+	return ret;
+}
+
 static CK_RV rpc_C_Finalize(CK_VOID_PTR reserved)
 {
 	CallState *cs;
@@ -1454,8 +1489,8 @@ static CK_RV rpc_C_Finalize(CK_VOID_PTR reserved)
 
 	pthread_mutex_unlock(&init_mutex);
 
-	debug(("C_Finalize: %d", CKR_OK));
-	return CKR_OK;
+	debug(("C_Finalize: %d", ret));
+	return ret;
 }
 
 static CK_RV rpc_C_GetInfo(CK_INFO_PTR info)
@@ -1573,7 +1608,7 @@ rpc_C_WaitForSlotEvent(CK_FLAGS flags, CK_SLOT_ID_PTR slot,
 }
 
 static CK_RV
-rpc_C_OpenSession(CK_SLOT_ID id, CK_FLAGS flags, CK_VOID_PTR user_data,
+rpc_C_OpenSession2(CK_SLOT_ID id, CK_FLAGS flags, CK_VOID_PTR user_data,
 		  CK_NOTIFY callback, CK_SESSION_HANDLE_PTR session)
 {
 	return_val_if_fail(pkcs11_initialized, CKR_CRYPTOKI_NOT_INITIALIZED);
@@ -1587,6 +1622,26 @@ rpc_C_OpenSession(CK_SLOT_ID id, CK_FLAGS flags, CK_VOID_PTR user_data,
 	PROCESS_CALL;
 	OUT_ULONG(session);
 	END_CALL;
+}
+
+static CK_RV
+rpc_C_OpenSession(CK_SLOT_ID id, CK_FLAGS flags, CK_VOID_PTR user_data,
+		  CK_NOTIFY callback, CK_SESSION_HANDLE_PTR session)
+{
+	CK_RV ret;
+	do {
+		debug(("C_OpenSession 1"));
+		ret = rpc_C_OpenSession2(id, flags, user_data, callback, session);
+		if (ret != CKR_OK) {
+			error_strike++;
+			usleep(500000);
+		}
+		else
+			error_strike = 0;
+	} 
+	while (error_strike > 1);
+
+	return ret;
 }
 
 static CK_RV rpc_C_CloseSession(CK_SESSION_HANDLE session)
