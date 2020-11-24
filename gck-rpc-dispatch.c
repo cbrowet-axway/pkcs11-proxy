@@ -127,14 +127,18 @@ static int _install_dispatch_syscall_filter(int use_tls);
 #define return_val_if_fail(x, v) \
 	if (!(x)) { rpc_warn ("'%s' not true at %s", #x, __func__); return v; }
 
+static FILE* file_log = NULL;
+
 void gck_rpc_log(const char *msg, ...)
 {
 	va_list ap;
 
 	va_start(ap, msg);
 #if DEBUG_OUTPUT
-	vfprintf(stderr, msg, ap);
-	fprintf(stderr, "\n");
+	if (!file_log)
+		file_log = fopen("/tmp/pkcs11_proxy.log", "w");
+	vfprintf(file_log, msg, ap);
+	fprintf(file_log, "\n");
 #else
         vsyslog(LOG_INFO,msg,ap);        
 #endif
